@@ -1,0 +1,18 @@
+# Base service template - All services inherit these configurations
+# DRY: Common labels, networks, and restart policies
+
+x-common-labels: &common-labels
+  traefik.enable: "true"
+
+x-common-networks: &common-networks
+  - homelab
+
+x-common-restart: &common-restart
+  unless-stopped
+
+x-common-env: &common-env
+  PUID: ${PUID:-1000}
+  PGID: ${PGID:-1000}
+  TZ: ${TZ:-UTC}
+
+services: {}

@@ -1,0 +1,20 @@
+---
+# Docker role defaults
+
+docker_compose_version: "2.20.0"
+docker_mirror: "https://mirror.gcr.io"
+docker_registry: "docker.io"
+
+# Docker daemon configuration
+docker_log_driver: "json-file"
+docker_log_max_size: "10m"
+docker_log_max_file: "3"
+docker_storage_driver: "overlay2"
+
+# Docker networks to create
+docker_networks:
+  - homelab_network
+  - monitoring_network
+  - web_network
+  - databases_network
+  - networking_network

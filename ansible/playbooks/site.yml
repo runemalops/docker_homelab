@@ -1,0 +1,50 @@
+---
+# Main site playbook for homelab deployment
+
+- name: Deploy Homelab Infrastructure
+  hosts: all
+  become: yes
+  vars_files:
+    - ../group_vars/all.yml
+  
+  pre_tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      tags: [always]
+
+  roles:
+    - role: docker
+      tags: [docker]
+    
+    - role: docker-compose
+      tags: [docker-compose]
+    
+    - role: security
+      tags: [security]
+    
+    - role: monitoring
+      tags: [monitoring]
+      when: enable_monitoring | default(true)
+    
+    - role: homelab-services
+      tags: [services]
+
+  post_tasks:
+    - name: Display deployment summary
+      debug:
+        msg: |
+          Homelab deployment completed successfully!
+          
+          Services deployed:
+          - Traefik (Reverse Proxy): http://{{ domain | default('localhost') }}:8080
+          - Portainer (Container Management): http://{{ domain | default('localhost') }}:9000
+          - Prometheus (Monitoring): http://{{ domain | default('localhost') }}:9090
+          - Grafana (Dashboards): http://{{ domain | default('localhost') }}:3000
+          
+          Next steps:
+          1. Configure your DNS to point to this server
+          2. Update the .env file with your domain and passwords
+          3. Run 'docker compose up -d' to start all services
+      tags: [always]

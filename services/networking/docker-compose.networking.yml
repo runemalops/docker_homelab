@@ -1,0 +1,82 @@
+version: '3.8'
+
+# Network services - Pi-hole, WireGuard, Nginx Proxy Manager
+
+services:
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+    restart: unless-stopped
+    ports:
+      - "8083:80"
+    volumes:
+      - pihole_data:/etc/pihole
+      - pihole_dnsmasq:/etc/dnsmasq.d
+    environment:
+      - TZ=${TZ:-UTC}
+      - WEBPASSWORD=${PIHOLE_PASSWORD:-changeme}
+      - DNSMASQ_LISTENING=all
+    networks:
+      - homelab
+      - networking
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.pihole.rule: "Host(`pihole.${DOMAIN:-localhost}`)"
+      traefik.http.services.pihole.loadbalancer.server.port: 80
+
+  wireguard:
+    image: linuxserver/wireguard:latest
+    container_name: wireguard
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    ports:
+      - "51820:51820/udp"
+    volumes:
+      - wireguard_config:/config
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-UTC}
+      - SERVERURL=${DOMAIN:-localhost}
+      - SERVERPORT=51820
+      - PEERS=5
+    networks:
+      - homelab
+      - networking
+
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      - "8084:80"
+      - "8443:443"
+      - "81:81"
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+    networks:
+      - homelab
+      - networking
+      - web
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.npm.rule: "Host(`npm.${DOMAIN:-localhost}`)"
+      traefik.http.services.npm.loadbalancer.server.port: 81
+
+volumes:
+  pihole_data:
+  pihole_dnsmasq:
+  wireguard_config:
+  npm_data:
+  npm_letsencrypt:
+
+networks:
+  homelab:
+    external: true
+  networking:
+    name: networking_network
+  web:
+    external: true

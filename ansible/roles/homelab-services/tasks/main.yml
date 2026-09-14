@@ -1,0 +1,113 @@
+---
+# Homelab services management role
+
+- name: Ensure Docker is running
+  systemd:
+    name: docker
+    state: started
+  tags: [services, docker]
+
+- name: Create service directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ homelab_base_path }}/services/monitoring"
+    - "{{ homelab_base_path }}/services/media"
+    - "{{ homelab_base_path }}/services/web"
+    - "{{ homelab_base_path }}/services/databases"
+    - "{{ homelab_base_path }}/services/networking"
+    - "{{ homelab_base_path }}/services/utilities"
+  tags: [services, directories]
+
+- name: Copy service compose files
+  copy:
+    src: "{{ homelab_base_path }}/services/{{ item }}/docker-compose.{{ item }}.yml"
+    dest: "{{ homelab_base_path }}/services/{{ item }}/docker-compose.{{ item }}.yml"
+    mode: '0644'
+  loop:
+    - monitoring
+    - media
+    - web
+    - databases
+    - networking
+    - utilities
+  tags: [services, copy]
+
+- name: Deploy monitoring services
+  community.docker.docker_compose:
+    project_src: "{{ homelab_base_path }}/services/monitoring"
+    files:
+      - docker-compose.monitoring.yml
+    state: present
+  when: enable_monitoring | default(true)
+  tags: [services, monitoring]
+
+- name: Deploy database services
+  community.docker.docker_compose:
+    project_src: "{{ homelab_base_path }}/services/databases"
+    files:
+      - docker-compose.databases.yml
+    state: present
+  when: enable_databases | default(true)
+  tags: [services, databases]
+
+- name: Deploy networking services
+  community.docker.docker_compose:
+    project_src: "{{ homelab_base_path }}/services/networking"
+    files:
+      - docker-compose.networking.yml
+    state: present
+  when: enable_networking | default(true)
+  tags: [services, networking]
+
+- name: Deploy web services
+  community.docker.docker_compose:
+    project_src: "{{ homelab_base_path }}/services/web"
+    files:
+      - docker-compose.web.yml
+    state: present
+  when: enable_web | default(false)
+  tags: [services, web]
+
+- name: Deploy media services
+  community.docker.docker_compose:
+    project_src: "{{ homelab_base_path }}/services/media"
+    files:
+      - docker-compose.media.yml
+    state: present
+  when: enable_media | default(false)
+  tags: [services, media]
+
+- name: Deploy utility services
+  community.docker.docker_compose:
+    project_src: "{{ homelab_base_path }}/services/utilities"
+    files:
+      - docker-compose.utilities.yml
+    state: present
+  when: enable_utilities | default(true)
+  tags: [services, utilities]
+
+- name: Deploy base services
+  community.docker.docker_compose:
+    project_src: "{{ homelab_base_path }}"
+    files:
+      - docker-compose.yml
+    state: present
+  tags: [services, base]
+
+- name: Wait for services to be healthy
+  uri:
+    url: "http://localhost:{{ item.port }}/health"
+    method: GET
+    status_code: 200
+  register: health_check
+  until: health_check.status == 200
+  retries: 30
+  delay: 10
+  loop:
+    - { name: "traefik", port: "8080" }
+    - { name: "portainer", port: "9000" }
+  ignore_errors: yes
+  tags: [services, health]

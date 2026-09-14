@@ -1,0 +1,22 @@
+---
+# Monitoring role handlers
+
+- name: Restart Prometheus
+  community.docker.docker_compose:
+    project_src: "{{ homelab_base_path }}/services/monitoring"
+    files:
+      - docker-compose.monitoring.yml
+    services:
+      - prometheus
+    state: restarted
+  listen: "Restart Prometheus"
+
+- name: Restart Grafana
+  community.docker.docker_compose:
+    project_src: "{{ homelab_base_path }}/services/monitoring"
+    files:
+      - docker-compose.monitoring.yml
+    services:
+      - grafana
+    state: restarted
+  listen: "Restart Grafana"

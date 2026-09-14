@@ -1,0 +1,41 @@
+http:
+  routers:
+    portainer:
+      rule: "Host(`portainer.runemal.cloud`) || Host(`portainer.localhost`) || (Host(`localhost`) && PathPrefix(`/portainer`))"
+      service: portainer
+      entryPoints:
+        - web
+
+    navidrome:
+      rule: "Host(`navidrome.runemal.cloud`) || Host(`navidrome.localhost`) || (Host(`localhost`) && PathPrefix(`/navidrome`))"
+      service: navidrome
+      entryPoints:
+        - web
+
+    jellyfin:
+      rule: "Host(`jellyfin.runemal.cloud`) || Host(`jellyfin.localhost`) || (Host(`localhost`) && PathPrefix(`/jellyfin`))"
+      service: jellyfin
+      entryPoints:
+        - web
+
+    traefik-dashboard:
+      rule: "Host(`traefik.runemal.cloud`) || Host(`traefik.localhost`)"
+      service: api@internal
+      entryPoints:
+        - web
+
+  services:
+    portainer:
+      loadBalancer:
+        servers:
+          - url: "http://portainer:9000"
+
+    navidrome:
+      loadBalancer:
+        servers:
+          - url: "http://navidrome:4533"
+
+    jellyfin:
+      loadBalancer:
+        servers:
+          - url: "http://jellyfin:8096"

@@ -1,0 +1,51 @@
+---
+# All group variables
+
+# Domain configuration
+domain: "localhost"
+email: "admin@{{ domain }}"
+
+# User/Group IDs
+puid: 1000
+pgid: 1000
+timezone: "UTC"
+
+# Database configurations
+postgres_user: "homelab"
+postgres_password: "changeme"
+postgres_db: "homelab"
+redis_password: "changeme"
+mysql_root_password: "changeme"
+mysql_database: "homelab"
+
+# Monitoring
+prometheus_retention: "30d"
+grafana_admin_password: "admin"
+
+# Media
+media_dir: "/media"
+downloads_dir: "/downloads"
+
+# Feature flags
+enable_monitoring: true
+enable_databases: true
+enable_networking: true
+enable_web: true
+enable_media: true
+enable_utilities: true
+
+# Security
+enable_firewall: true
+enable_fail2ban: true
+enable_unattended_upgrades: true
+enable_ssl: true
+
+# Docker configuration
+docker_network: "homelab_network"
+docker_compose_path: "/home/runemal/Documents/docker_homelab"
+homelab_base_path: "/home/runemal/Documents/docker_homelab"
+homelab_data_path: "/var/lib/homelab"
+homelab_config_path: "{{ homelab_base_path }}/configs"
+
+# Additional scrape configs for Prometheus
+additional_scrape_configs: []

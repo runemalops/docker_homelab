@@ -1,0 +1,14 @@
+---
+# Security role handlers
+
+- name: Restart Fail2Ban
+  systemd:
+    name: fail2ban
+    state: restarted
+  listen: "Restart Fail2Ban"
+
+- name: Reload UFW
+  systemd:
+    name: ufw
+    state: reloaded
+  listen: "Reload UFW"

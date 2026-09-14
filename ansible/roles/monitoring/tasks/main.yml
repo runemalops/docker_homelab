@@ -1,0 +1,66 @@
+---
+# Monitoring setup role
+
+- name: Create monitoring directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ homelab_config_path }}/prometheus"
+    - "{{ homelab_config_path }}/grafana"
+    - "{{ homelab_data_path }}/prometheus"
+    - "{{ homelab_data_path }}/grafana"
+  tags: [monitoring, directories]
+
+- name: Copy Prometheus configuration
+  template:
+    src: templates/prometheus.yml.j2
+    dest: "{{ homelab_config_path }}/prometheus/prometheus.yml"
+    mode: '0644'
+  notify: Restart Prometheus
+  tags: [monitoring, prometheus]
+
+- name: Copy Grafana datasource configuration
+  template:
+    src: templates/grafana-datasources.yml.j2
+    dest: "{{ homelab_config_path }}/grafana/provisioning/datasources/prometheus.yml"
+    mode: '0644'
+  tags: [monitoring, grafana]
+
+- name: Copy Grafana dashboard configuration
+  template:
+    src: templates/grafana-dashboards.yml.j2
+    dest: "{{ homelab_config_path }}/grafana/provisioning/dashboards/dashboards.yml"
+    mode: '0644'
+  tags: [monitoring, grafana]
+
+- name: Deploy monitoring stack
+  community.docker.docker_compose:
+    project_src: "{{ homelab_base_path }}/services/monitoring"
+    files:
+      - docker-compose.monitoring.yml
+    state: present
+  tags: [monitoring, deploy]
+
+- name: Wait for Prometheus to be ready
+  uri:
+    url: "http://localhost:9090/-/healthy"
+    method: GET
+    status_code: 200
+  register: prometheus_health
+  until: prometheus_health.status == 200
+  retries: 30
+  delay: 10
+  tags: [monitoring, health]
+
+- name: Wait for Grafana to be ready
+  uri:
+    url: "http://localhost:3000/api/health"
+    method: GET
+    status_code: 200
+  register: grafana_health
+  until: grafana_health.status == 200
+  retries: 30
+  delay: 10
+  tags: [monitoring, health]

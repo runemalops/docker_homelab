@@ -1,0 +1,131 @@
+version: '3.8'
+
+# Media stack - Plex, Sonarr, Radarr, qBittorrent
+
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    restart: unless-stopped
+    ports:
+      - "8096:8096"
+    volumes:
+      - /mnt/heimdall/Projects/jellyfin/config:/config
+      - /mnt/heimdall/Projects/jellyfin/cache:/cache
+      - /mnt/heimdall/Projects/jellyfin/media:/media:ro
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-UTC}
+    networks:
+      - homelab
+      - web
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.jellyfin.rule: "Host(`jellyfin.${DOMAIN:-localhost}`)"
+      traefik.http.services.jellyfin.loadbalancer.server.port: 8096
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    restart: unless-stopped
+    ports:
+      - "8989:8989"
+    volumes:
+      - sonarr_config:/config
+      - ${MEDIA_DIR:-/media}:/media
+      - ${DOWNLOADS_DIR:-/downloads}:/downloads
+    environment:
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      TZ: ${TZ:-UTC}
+    networks:
+      - homelab
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.sonarr.rule: "Host(`sonarr.${DOMAIN:-localhost}`)"
+      traefik.http.services.sonarr.loadbalancer.server.port: 8989
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    restart: unless-stopped
+    ports:
+      - "7878:7878"
+    volumes:
+      - radarr_config:/config
+      - ${MEDIA_DIR:-/media}:/media
+      - ${DOWNLOADS_DIR:-/downloads}:/downloads
+    environment:
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      TZ: ${TZ:-UTC}
+    networks:
+      - homelab
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.radarr.rule: "Host(`radarr.${DOMAIN:-localhost}`)"
+      traefik.http.services.radarr.loadbalancer.server.port: 7878
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    restart: unless-stopped
+    ports:
+      - "8085:8080"
+      - "6881:6881"
+      - "6881:6881/udp"
+    volumes:
+      - qbittorrent_config:/config
+      - ${DOWNLOADS_DIR:-/downloads}:/downloads
+    environment:
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      TZ: ${TZ:-UTC}
+      WEBUI_PORT: 8080
+    networks:
+      - homelab
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.qbittorrent.rule: "Host(`qbittorrent.${DOMAIN:-localhost}`)"
+      traefik.http.services.qbittorrent.loadbalancer.server.port: 8080
+
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    restart: unless-stopped
+    user: "${PUID:-1000}:${PGID:-1000}"
+    ports:
+      - "4533:4533"
+    volumes:
+      - navidrome_data:/data
+      - /mnt/heimdall/Projects/navidrome/music:/music:ro
+    environment:
+      ND_LOGLEVEL: info
+      ND_SESSIONTIMEOUT: 48h
+      ND_SCANSCHEDULE: 1h
+      ND_TRANSCODINGCACHESIZE: 100MB
+      ND_SCANNER_SCANONSTARTUP: "true"
+      ND_LYRICS: "true"
+    networks:
+      - homelab
+      - web
+
+volumes:
+  sonarr_config:
+  radarr_config:
+  qbittorrent_config:
+  navidrome_data:
+
+networks:
+  homelab:
+    external: true
+  web:
+    external: true

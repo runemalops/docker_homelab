@@ -1,0 +1,104 @@
+---
+# Security hardening role
+
+- name: Install security packages
+  apt:
+    name:
+      - ufw
+      - fail2ban
+      - unattended-upgrades
+      - apt-listchanges
+    state: present
+    update_cache: yes
+  tags: [security, packages]
+
+- name: Configure UFW
+  ufw:
+    state: enabled
+    policy: deny
+  when: enable_firewall | default(true)
+  tags: [security, firewall]
+
+- name: Allow SSH through UFW
+  ufw:
+    rule: allow
+    port: ssh
+    proto: tcp
+  when: enable_firewall | default(true)
+  tags: [security, firewall]
+
+- name: Allow HTTP through UFW
+  ufw:
+    rule: allow
+    port: "80"
+    proto: tcp
+  when: enable_firewall | default(true)
+  tags: [security, firewall]
+
+- name: Allow HTTPS through UFW
+  ufw:
+    rule: allow
+    port: "443"
+    proto: tcp
+  when: enable_firewall | default(true)
+  tags: [security, firewall]
+
+- name: Allow Docker network traffic
+  ufw:
+    rule: allow
+    from_ip: "172.16.0.0/12"
+  when: enable_firewall | default(true)
+  tags: [security, firewall]
+
+- name: Configure Fail2Ban
+  template:
+    src: templates/jail.local.j2
+    dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Fail2Ban
+  when: enable_fail2ban | default(true)
+  tags: [security, fail2ban]
+
+- name: Enable Fail2Ban service
+  systemd:
+    name: fail2ban
+    state: started
+    enabled: yes
+  when: enable_fail2ban | default(true)
+  tags: [security, fail2ban]
+
+- name: Configure unattended-upgrades
+  copy:
+    content: |
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Unattended-Upgrade "1";
+      APT::Periodic::AutocleanInterval "7";
+      APT::Periodic::Download-Upgradeable-Packages "1";
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+    owner: root
+    group: root
+    mode: '0644'
+  when: enable_unattended_upgrades | default(true)
+  tags: [security, upgrades]
+
+- name: Set kernel parameters for security
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: yes
+  loop:
+    - { name: "net.ipv4.conf.all.rp_filter", value: "1" }
+    - { name: "net.ipv4.conf.default.rp_filter", value: "1" }
+    - { name: "net.ipv4.icmp_echo_ignore_broadcasts", value: "1" }
+    - { name: "net.ipv4.conf.all.accept_redirects", value: "0" }
+    - { name: "net.ipv4.conf.default.accept_redirects", value: "0" }
+    - { name: "net.ipv4.conf.all.send_redirects", value: "0" }
+    - { name: "net.ipv4.conf.default.send_redirects", value: "0" }
+    - { name: "net.ipv4.conf.all.accept_source_route", value: "0" }
+    - { name: "net.ipv4.conf.default.accept_source_route", value: "0" }
+    - { name: "net.ipv6.conf.all.accept_redirects", value: "0" }
+    - { name: "net.ipv6.conf.default.accept_redirects", value: "0" }
+  tags: [security, kernel]

@@ -1,0 +1,37 @@
+# Python dependencies for homelab testing and automation
+
+# Testing
+pytest>=7.0.0
+pytest-html>=3.2.0
+pytest-cov>=4.0.0
+pytest-xdist>=3.0.0
+
+# YAML parsing
+PyYAML>=6.0
+
+# HTTP requests
+requests>=2.28.0
+
+# Docker SDK
+docker>=6.0.0
+
+# Ansible
+ansible-core>=2.14.0
+ansible-lint>=6.0.0
+
+# OpenTofu (via subprocess, but useful for validation)
+python-hcl2>=4.3.0
+
+# Utilities
+python-dotenv>=1.0.0
+click>=8.0.0
+
+# Code quality
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.0.0
+isort>=5.12.0
+
+# Security
+safety>=2.3.0
+bandit>=1.7.0

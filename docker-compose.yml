@@ -1,0 +1,64 @@
+# Base services configuration - All services inherit from here
+# DRY: Shared networks, volumes, and environment variables defined once
+# .env file is loaded from $HOME/.homelab/.env
+
+networks:
+  homelab:
+    driver: bridge
+    name: homelab_network
+  monitoring:
+    driver: bridge
+    name: monitoring_network
+  web:
+    driver: bridge
+    name: web_network
+
+volumes:
+  prometheus_data:
+  grafana_data:
+  portainer_data:
+  redis_data:
+  postgres_data:
+
+services:
+  # Traefik Reverse Proxy - Central entry point
+  traefik:
+    image: traefik:v3.4
+    container_name: traefik
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - ./configs/traefik:/etc/traefik
+    networks:
+      - web
+      - homelab
+    labels:
+      - "traefik.enable=true"
+
+  # Cloudflare Tunnel - Exposes services to the internet
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    networks:
+      - web
+
+  # Portainer - Container Management UI
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - homelab

@@ -1,0 +1,24 @@
+# {{ ansible_managed }}
+# Docker Compose override file for environment-specific configuration
+
+version: '3.8'
+
+# Override base services with environment-specific settings
+services:
+  traefik:
+    environment:
+      - DOMAIN={{ domain | default('localhost') }}
+{% if enable_ssl | default(true) %}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+{% else %}
+    ports:
+      - "80:80"
+      - "8080:8080"
+{% endif %}
+
+  portainer:
+    environment:
+      - DOMAIN={{ domain | default('localhost') }}
