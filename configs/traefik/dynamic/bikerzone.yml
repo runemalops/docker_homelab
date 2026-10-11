@@ -1,0 +1,13 @@
+http:
+  routers:
+    bikerzone:
+      rule: "Host(`bikerzone.runemal.cloud`) || Host(`bikerzone.localhost`)"
+      service: bikerzone
+      entryPoints:
+        - web
+
+  services:
+    bikerzone:
+      loadBalancer:
+        servers:
+          - url: "http://bikerzone:80"
