@@ -7,10 +7,16 @@ services:
     image: jellyfin/jellyfin:latest
     container_name: jellyfin
     restart: unless-stopped
+    ports:
+      - "8096:8096"
     volumes:
       - /mnt/heimdall/Projects/jellyfin/config:/config
+      - /mnt/heimdall/Projects/jellyfin/cache:/cache
+      - /mnt/heimdall/Projects/jellyfin/media:/media:ro
     environment:
       - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-UTC}
     networks:
       - homelab
       - web
