@@ -1,6 +1,6 @@
 version: '3.8'
 
-# Media stack - Sonarr, Radarr, qBittorrent
+# Media stack - Jellyfin, Sonarr, Radarr, qBittorrent
 
 services:
   jellyfin:
@@ -36,8 +36,12 @@ services:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
     restart: unless-stopped
+    ports:
+      - "8989:8989"
     volumes:
       - sonarr_config:/config
+      - ${MEDIA_DIR:-/media}:/media
+      - ${DOWNLOADS_DIR:-/downloads}:/downloads
     environment:
       PUID: ${PUID:-1000}
       PGID: ${PGID:-1000}
@@ -53,8 +57,12 @@ services:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
     restart: unless-stopped
+    ports:
+      - "7878:7878"
     volumes:
       - radarr_config:/config
+      - ${MEDIA_DIR:-/media}:/media
+      - ${DOWNLOADS_DIR:-/downloads}:/downloads
     environment:
       PUID: ${PUID:-1000}
       PGID: ${PGID:-1000}
@@ -70,8 +78,13 @@ services:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
     restart: unless-stopped
+    ports:
+      - "8085:8080"
+      - "6881:6881"
+      - "6881:6881/udp"
     volumes:
       - qbittorrent_config:/config
+      - ${DOWNLOADS_DIR:-/downloads}:/downloads
     environment:
       PUID: ${PUID:-1000}
       PGID: ${PGID:-1000}
@@ -89,8 +102,11 @@ services:
     container_name: navidrome
     restart: unless-stopped
     user: "${PUID:-1000}:${PGID:-1000}"
+    ports:
+      - "4533:4533"
     volumes:
       - navidrome_data:/data
+      - /mnt/heimdall/Projects/navidrome/music:/music:ro
     environment:
       ND_LOGLEVEL: info
       ND_SESSIONTIMEOUT: 48h

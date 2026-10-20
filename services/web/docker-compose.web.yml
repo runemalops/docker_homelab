@@ -7,8 +7,11 @@ services:
     image: nginx:alpine
     container_name: nginx
     restart: unless-stopped
+    ports:
+      - "8081:80"
     volumes:
       - nginx_config:/etc/nginx/conf.d
+      - nginx_html:/usr/share/nginx/html
     networks:
       - homelab
       - web
@@ -21,8 +24,11 @@ services:
     image: lscr.io/linuxserver/nextcloud:latest
     container_name: nextcloud
     restart: unless-stopped
+    ports:
+      - "8444:443"
     volumes:
       - nextcloud_config:/config
+      - nextcloud_data:/data
     environment:
       PUID: ${PUID:-1000}
       PGID: ${PGID:-1000}
@@ -40,10 +46,15 @@ services:
     image: wordpress:latest
     container_name: wordpress
     restart: unless-stopped
+    ports:
+      - "8082:80"
     volumes:
       - wordpress_data:/var/www/html
     environment:
       - WORDPRESS_DB_HOST=mariadb
+      - WORDPRESS_DB_NAME=wordpress
+      - WORDPRESS_DB_USER=${POSTGRES_USER:-homelab}
+      - WORDPRESS_DB_PASSWORD=${POSTGRES_PASSWORD:-changeme}
     networks:
       - homelab
       - web
