@@ -88,14 +88,6 @@ resource "docker_volume" "grafana_data" {
   }
 }
 
-resource "docker_volume" "portainer_data" {
-  name = "portainer_data"
-  labels {
-    label = "environment"
-    value = var.environment
-  }
-}
-
 resource "docker_volume" "postgres_data" {
   name = "postgres_data"
   labels {

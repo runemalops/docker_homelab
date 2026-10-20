@@ -108,6 +108,5 @@
   delay: 10
   loop:
     - { name: "traefik", port: "8080" }
-    - { name: "portainer", port: "9000" }
   ignore_errors: yes
   tags: [services, health]

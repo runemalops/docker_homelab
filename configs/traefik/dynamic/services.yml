@@ -1,11 +1,5 @@
 http:
   routers:
-    portainer:
-      rule: "Host(`portainer.runemal.cloud`) || Host(`portainer.localhost`) || (Host(`localhost`) && PathPrefix(`/portainer`))"
-      service: portainer
-      entryPoints:
-        - web
-
     navidrome:
       rule: "Host(`navidrome.runemal.cloud`) || Host(`navidrome.localhost`) || (Host(`localhost`) && PathPrefix(`/navidrome`))"
       service: navidrome
@@ -25,11 +19,6 @@ http:
         - web
 
   services:
-    portainer:
-      loadBalancer:
-        servers:
-          - url: "http://portainer:9000"
-
     navidrome:
       loadBalancer:
         servers:

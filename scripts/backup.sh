@@ -39,7 +39,6 @@ backup_volumes() {
     VOLUMES=(
         "prometheus_data"
         "grafana_data"
-        "portainer_data"
         "postgres_data"
         "redis_data"
     )

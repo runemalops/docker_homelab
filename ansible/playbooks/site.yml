@@ -39,7 +39,6 @@
           
           Services deployed:
           - Traefik (Reverse Proxy): http://{{ domain | default('localhost') }}:8080
-          - Portainer (Container Management): http://{{ domain | default('localhost') }}:9000
           - Prometheus (Monitoring): http://{{ domain | default('localhost') }}:9090
           - Grafana (Dashboards): http://{{ domain | default('localhost') }}:3000
           

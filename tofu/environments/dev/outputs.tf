@@ -29,7 +29,6 @@ output "service_endpoints" {
   description = "Service endpoints"
   value = {
     traefik     = "http://${var.domain}:8080"
-    portainer   = "http://${var.domain}:9000"
     prometheus  = "http://${var.domain}:9090"
     grafana     = "http://${var.domain}:3000"
   }

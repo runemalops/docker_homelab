@@ -42,7 +42,7 @@ class TestDockerCompose:
         with open(self.compose_files['base']) as f:
             config = yaml.safe_load(f)
         
-        required_services = ['traefik', 'portainer', 'watchtower']
+        required_services = ['traefik', 'watchtower']
         for service in required_services:
             assert service in config['services'], f"Missing service: {service}"
     
@@ -56,15 +56,6 @@ class TestDockerCompose:
         assert '80:80' in traefik['ports'], "Traefik should expose port 80"
         assert '443:443' in traefik['ports'], "Traefik should expose port 443"
         assert '8080:8080' in traefik['ports'], "Traefik should expose port 8080"
-    
-    def test_portainer_configuration(self):
-        """Test Portainer configuration is correct"""
-        with open(self.compose_files['base']) as f:
-            config = yaml.safe_load(f)
-        
-        portainer = config['services']['portainer']
-        assert portainer['image'].startswith('portainer/'), "Portainer image should start with portainer/"
-        assert '9000:9000' in portainer['ports'], "Portainer should expose port 9000"
     
     def test_monitoring_compose_valid(self):
         """Test monitoring docker-compose is valid"""

@@ -9,7 +9,7 @@ docker_homelab/
 ├── base/                          # Base configurations
 ├── services/                      # Service-specific configurations
 │   ├── monitoring/               # Prometheus, Grafana, Node Exporter
-│   ├── media/                    # Plex, Sonarr, Radarr, qBittorrent
+│   ├── media/                    # Jellyfin, Sonarr, Radarr, qBittorrent
 │   ├── web/                      # Nginx, Nextcloud, WordPress
 │   ├── databases/                # PostgreSQL, Redis, MariaDB
 │   ├── networking/               # Pi-hole, WireGuard, Nginx Proxy Manager
@@ -28,6 +28,7 @@ docker_homelab/
 │   └── e2e/                      # End-to-end tests
 ├── scripts/                       # Utility scripts
 ├── configs/                       # Configuration files
+├── docs/                          # Architecture diagrams (Mermaid)
 ├── docker-compose.yml             # Main Docker Compose file
 ├── .env.example                   # Environment variables template
 └── README.md                      # This file
@@ -124,7 +125,7 @@ docker compose --env-file ~/.homelab/.env up -d
 ### Core Services (Always Running)
 
 - **Traefik**: Reverse proxy and SSL termination
-- **Portainer**: Container management UI
+- **Cloudflared**: Cloudflare Tunnel to publish services
 - **Watchtower**: Automatic container updates
 
 ### Monitoring Stack
@@ -138,7 +139,7 @@ docker compose --env-file ~/.homelab/.env up -d
 - **Databases**: PostgreSQL, Redis, MariaDB
 - **Networking**: Pi-hole, WireGuard, Nginx Proxy Manager
 - **Web**: Nginx, Nextcloud, WordPress
-- **Media**: Plex, Sonarr, Radarr, qBittorrent
+- **Media**: Jellyfin, Sonarr, Radarr, qBittorrent
 - **Utilities**: Homepage, Gitea, Vaultwarden, Uptime Kuma
 
 ## Testing
@@ -270,7 +271,6 @@ docker compose ps
 
 # Check specific service
 curl http://localhost:8080/api/overview  # Traefik
-curl http://localhost:9000/api/status    # Portainer
 ```
 
 ## Contributing

@@ -58,7 +58,7 @@ class TestHomelabDeployment:
             running_services = [s['Service'] for s in services if s.get('State') == 'running']
             
             # Check that critical services are running
-            critical_services = ['traefik', 'portainer']
+            critical_services = ['traefik']
             for service in critical_services:
                 assert service in running_services, f"Service {service} is not running"
     
@@ -69,14 +69,6 @@ class TestHomelabDeployment:
             assert response.status_code == 200, "Traefik is not responsive"
         except requests.exceptions.RequestException:
             pytest.skip("Traefik is not running or not accessible")
-    
-    def test_portainer_is_responsive(self):
-        """Test that Portainer is responsive"""
-        try:
-            response = self.http.get(f"http://localhost:9000/api/status", timeout=10)
-            assert response.status_code == 200, "Portainer is not responsive"
-        except requests.exceptions.RequestException:
-            pytest.skip("Portainer is not running or not accessible")
     
     def test_prometheus_is_responsive(self):
         """Test that Prometheus is responsive"""
@@ -108,7 +100,7 @@ class TestHomelabDeployment:
         result = subprocess.run(['docker', 'volume', 'ls', '--format', '{{.Name}}'],
                               capture_output=True, text=True)
         
-        required_volumes = ['prometheus_data', 'grafana_data', 'portainer_data']
+        required_volumes = ['prometheus_data', 'grafana_data']
         for volume in required_volumes:
             assert volume in result.stdout, f"Volume {volume} not found"
     

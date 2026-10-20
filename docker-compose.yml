@@ -16,7 +16,6 @@ networks:
 volumes:
   prometheus_data:
   grafana_data:
-  portainer_data:
   redis_data:
   postgres_data:
 
@@ -30,7 +29,6 @@ services:
       - "host.docker.internal:host-gateway"
     ports:
       - "80:80"
-      - "8080:8080"
     volumes:
       - ./configs/traefik:/etc/traefik
     networks:
@@ -49,16 +47,3 @@ services:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
     networks:
       - web
-
-  # Portainer - Container Management UI
-  portainer:
-    image: portainer/portainer-ce:latest
-    container_name: portainer
-    restart: unless-stopped
-    ports:
-      - "9000:9000"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
-    networks:
-      - homelab
