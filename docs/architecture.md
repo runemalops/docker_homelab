@@ -42,8 +42,6 @@ flowchart TB
 
         VOL[("volúmenes nombrados<br/>*_data · *_config")]
     end
-
-    WEB -. "proxy" .-> NETW
 ```
 
 ### Redes
