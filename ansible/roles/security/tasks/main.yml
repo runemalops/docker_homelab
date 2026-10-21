@@ -2,25 +2,25 @@
 # Security hardening role
 
 - name: Install security packages
-  apt:
+  ansible.builtin.apt:
     name:
       - ufw
       - fail2ban
       - unattended-upgrades
       - apt-listchanges
     state: present
-    update_cache: yes
+    update_cache: true
   tags: [security, packages]
 
 - name: Configure UFW
-  ufw:
+  community.general.ufw:
     state: enabled
     policy: deny
   when: enable_firewall | default(true)
   tags: [security, firewall]
 
 - name: Allow SSH through UFW
-  ufw:
+  community.general.ufw:
     rule: allow
     port: ssh
     proto: tcp
@@ -28,7 +28,7 @@
   tags: [security, firewall]
 
 - name: Allow HTTP through UFW
-  ufw:
+  community.general.ufw:
     rule: allow
     port: "80"
     proto: tcp
@@ -36,7 +36,7 @@
   tags: [security, firewall]
 
 - name: Allow HTTPS through UFW
-  ufw:
+  community.general.ufw:
     rule: allow
     port: "443"
     proto: tcp
@@ -44,33 +44,33 @@
   tags: [security, firewall]
 
 - name: Allow Docker network traffic
-  ufw:
+  community.general.ufw:
     rule: allow
     from_ip: "172.16.0.0/12"
   when: enable_firewall | default(true)
   tags: [security, firewall]
 
 - name: Configure Fail2Ban
-  template:
+  ansible.builtin.template:
     src: templates/jail.local.j2
     dest: /etc/fail2ban/jail.local
     owner: root
-    group: root
+    ansible.builtin.group: root
     mode: '0644'
   notify: Restart Fail2Ban
   when: enable_fail2ban | default(true)
   tags: [security, fail2ban]
 
 - name: Enable Fail2Ban service
-  systemd:
+  ansible.builtin.systemd:
     name: fail2ban
     state: started
-    enabled: yes
+    enabled: true
   when: enable_fail2ban | default(true)
   tags: [security, fail2ban]
 
 - name: Configure unattended-upgrades
-  copy:
+  ansible.builtin.copy:
     content: |
       APT::Periodic::Update-Package-Lists "1";
       APT::Periodic::Unattended-Upgrade "1";
@@ -78,17 +78,17 @@
       APT::Periodic::Download-Upgradeable-Packages "1";
     dest: /etc/apt/apt.conf.d/20auto-upgrades
     owner: root
-    group: root
+    ansible.builtin.group: root
     mode: '0644'
   when: enable_unattended_upgrades | default(true)
   tags: [security, upgrades]
 
 - name: Set kernel parameters for security
-  sysctl:
+  ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
     state: present
-    reload: yes
+    reload: true
   loop:
     - { name: "net.ipv4.conf.all.rp_filter", value: "1" }
     - { name: "net.ipv4.conf.default.rp_filter", value: "1" }

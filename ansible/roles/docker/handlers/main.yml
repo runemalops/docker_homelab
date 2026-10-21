@@ -2,13 +2,13 @@
 # Docker role handlers
 
 - name: Restart Docker
-  systemd:
+  ansible.builtin.systemd:
     name: docker
     state: restarted
   listen: "Restart Docker"
 
 - name: Reload Docker daemon
-  systemd:
+  ansible.builtin.systemd:
     name: docker
     state: reloaded
   listen: "Reload Docker daemon"

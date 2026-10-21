@@ -2,13 +2,13 @@
 # Homelab services management role
 
 - name: Ensure Docker is running
-  systemd:
+  ansible.builtin.systemd:
     name: docker
     state: started
   tags: [services, docker]
 
 - name: Create service directories
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: '0755'
@@ -21,7 +21,7 @@
   tags: [services, directories]
 
 - name: Copy service compose files
-  copy:
+  ansible.builtin.copy:
     src: "{{ homelab_base_path }}/services/{{ item }}/docker-compose.{{ item }}.yml"
     dest: "{{ homelab_base_path }}/services/{{ item }}/docker-compose.{{ item }}.yml"
     mode: '0644'
@@ -34,7 +34,7 @@
   tags: [services, copy]
 
 - name: Deploy database services
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ homelab_base_path }}/services/databases"
     files:
       - docker-compose.databases.yml
@@ -43,7 +43,7 @@
   tags: [services, databases]
 
 - name: Deploy networking services
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ homelab_base_path }}/services/networking"
     files:
       - docker-compose.networking.yml
@@ -52,7 +52,7 @@
   tags: [services, networking]
 
 - name: Deploy web services
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ homelab_base_path }}/services/web"
     files:
       - docker-compose.web.yml
@@ -61,7 +61,7 @@
   tags: [services, web]
 
 - name: Deploy media services
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ homelab_base_path }}/services/media"
     files:
       - docker-compose.media.yml
@@ -70,7 +70,7 @@
   tags: [services, media]
 
 - name: Deploy utility services
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ homelab_base_path }}/services/utilities"
     files:
       - docker-compose.utilities.yml
@@ -79,7 +79,7 @@
   tags: [services, utilities]
 
 - name: Deploy base services
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ homelab_base_path }}"
     files:
       - docker-compose.yml
@@ -87,15 +87,15 @@
   tags: [services, base]
 
 - name: Wait for services to be healthy
-  uri:
+  ansible.builtin.uri:
     url: "http://localhost:{{ item.port }}/health"
     method: GET
     status_code: 200
-  register: health_check
-  until: health_check.status == 200
+  register: homelab_services_health_check
+  until: homelab_services_health_check.status == 200
   retries: 30
   delay: 10
   loop:
     - { name: "traefik", port: "8080" }
-  ignore_errors: yes
+  ignore_errors: true
   tags: [services, health]

@@ -91,7 +91,7 @@ class TestServiceTemplates:
     def setup_method(self):
         """Setup test fixtures"""
         self.base_path = Path(__file__).parent.parent.parent
-        self.templates_path = self.base_path / 'ansible' / 'roles' / 'docker-compose' / 'templates'
+        self.templates_path = self.base_path / 'ansible' / 'roles' / 'docker_compose' / 'templates'
     
     def test_template_files_exist(self):
         """Test that template files exist"""

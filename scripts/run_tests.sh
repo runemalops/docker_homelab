@@ -34,13 +34,22 @@ check_prerequisites() {
     
     # Check pytest
     if ! command -v pytest &> /dev/null; then
-        warn "pytest not installed. Installing..."
-        pip install pytest pytest-html pytest-cov
+        if command -v pip &> /dev/null; then
+            warn "pytest not installed. Installing..."
+            pip install pytest pytest-html pytest-cov
+        else
+            error "pytest not installed and pip is unavailable. Install it with: python3 -m pip install -r requirements.txt"
+        fi
     fi
     
     # Check Python dependencies
-    if [ -f "$BASE_DIR/requirements.txt" ]; then
+    if [ -f "$BASE_DIR/requirements.txt" ] && command -v pip &> /dev/null; then
         pip install -r "$BASE_DIR/requirements.txt"
+    fi
+    
+    # Check ansible-lint (integration tests skip when it is missing)
+    if ! command -v ansible-lint &> /dev/null; then
+        warn "ansible-lint not installed. Install it with: python3 -m pip install ansible-lint"
     fi
     
     log "Prerequisites check completed"

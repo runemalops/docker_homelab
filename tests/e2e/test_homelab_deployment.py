@@ -109,9 +109,15 @@ class TestHomelabSecurity:
     def test_firewall_is_configured(self):
         """Test that firewall is configured"""
         try:
-            result = subprocess.run(['ufw', 'status'], 
+            result = subprocess.run(['ufw', 'status'],
                                   capture_output=True, text=True)
-            assert 'active' in result.stdout.lower(), "Firewall is not active"
+            output = (result.stdout + result.stderr).lower()
+            if result.returncode != 0 or 'root' in output:
+                # 'ufw status' needs root; fall back to the unit state
+                result = subprocess.run(['systemctl', 'is-active', 'ufw'],
+                                      capture_output=True, text=True)
+                output = (result.stdout + result.stderr).lower()
+            assert result.returncode == 0 and 'active' in output, "Firewall is not active"
         except FileNotFoundError:
             pytest.skip("UFW is not installed")
     
@@ -120,9 +126,13 @@ class TestHomelabSecurity:
         try:
             result = subprocess.run(['systemctl', 'is-active', 'fail2ban'],
                                   capture_output=True, text=True)
-            assert result.returncode == 0, "Fail2Ban is not running"
+            unit = subprocess.run(['systemctl', 'is-enabled', 'fail2ban'],
+                                capture_output=True, text=True)
         except FileNotFoundError:
+            pytest.skip("systemctl is not installed")
+        if 'not-found' in (unit.stdout + unit.stderr).lower():
             pytest.skip("Fail2Ban is not installed")
+        assert result.returncode == 0, "Fail2Ban is not running"
     
     def test_docker_daemon_is_secured(self):
         """Test that Docker daemon is properly secured"""

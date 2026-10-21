@@ -2,21 +2,21 @@
 # Docker Compose installation and configuration role
 
 - name: Check Docker Compose version
-  command: docker compose version
+  ansible.builtin.command: docker compose version
   register: docker_compose_version_check
   changed_when: false
-  ignore_errors: yes
+  ignore_errors: true
   tags: [docker-compose, check]
 
 - name: Install Docker Compose
-  apt:
+  ansible.builtin.apt:
     name: docker-compose-plugin
     state: present
   when: docker_compose_version_check.rc != 0
   tags: [docker-compose, install]
 
 - name: Create Docker Compose directory structure
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: '0755'
@@ -28,28 +28,28 @@
   tags: [docker-compose, directories]
 
 - name: Copy environment file
-  template:
+  ansible.builtin.template:
     src: templates/env.j2
     dest: "{{ homelab_base_path }}/.env"
     mode: '0600'
   tags: [docker-compose, configuration]
 
 - name: Copy base docker-compose file
-  copy:
+  ansible.builtin.copy:
     src: "{{ homelab_base_path }}/docker-compose.yml"
     dest: "{{ homelab_base_path }}/docker-compose.yml"
     mode: '0644'
   tags: [docker-compose, configuration]
 
 - name: Create Docker Compose override file
-  template:
+  ansible.builtin.template:
     src: templates/docker-compose.override.yml.j2
     dest: "{{ homelab_base_path }}/docker-compose.override.yml"
     mode: '0644'
   tags: [docker-compose, configuration]
 
 - name: Validate Docker Compose configuration
-  command: docker compose config
+  ansible.builtin.command: docker compose config
   args:
     chdir: "{{ homelab_base_path }}"
   changed_when: false

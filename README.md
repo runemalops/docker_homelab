@@ -110,6 +110,7 @@ tofu plan
 tofu apply
 
 # Configure services with Ansible
+ansible-galaxy collection install -r ansible/collections/requirements.yml
 cd ansible
 ansible-playbook playbooks/site.yml
 
