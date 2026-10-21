@@ -29,7 +29,7 @@ class TestAnsibleRoles:
     
     def test_roles_exist(self):
         """Test that required roles exist"""
-        required_roles = ['docker', 'docker-compose', 'homelab-services', 'security', 'monitoring']
+        required_roles = ['docker', 'docker-compose', 'homelab-services', 'security']
         for role in required_roles:
             role_path = self.roles_path / role
             assert role_path.exists(), f"Missing role: {role}"
@@ -45,7 +45,7 @@ class TestAnsibleRoles:
     
     def test_roles_have_handlers(self):
         """Test that roles that need handlers have them"""
-        roles_needing_handlers = ['docker', 'security', 'monitoring']
+        roles_needing_handlers = ['docker', 'security']
         for role in roles_needing_handlers:
             handlers_dir = self.roles_path / role / 'handlers'
             assert handlers_dir.exists(), f"Role {role} missing handlers directory"
@@ -77,7 +77,7 @@ class TestAnsibleRoles:
         with open(group_vars) as f:
             config = yaml.safe_load(f)
         
-        required_vars = ['domain', 'postgres_user', 'postgres_password', 'enable_monitoring']
+        required_vars = ['domain', 'postgres_user', 'postgres_password']
         for var in required_vars:
             assert var in config, f"Missing variable in group_vars: {var}"
     

@@ -28,7 +28,7 @@ output "storage_paths" {
 output "service_endpoints" {
   description = "Service endpoints"
   value = {
-    traefik     = "https://${var.domain}"
+    traefik = "https://${var.domain}"
   }
 }
 

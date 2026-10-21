@@ -6,9 +6,6 @@ networks:
   homelab:
     driver: bridge
     name: homelab_network
-  monitoring:
-    driver: bridge
-    name: monitoring_network
   web:
     driver: bridge
     name: web_network

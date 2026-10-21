@@ -102,6 +102,5 @@ def sample_ansible_vars():
         'domain': 'localhost',
         'postgres_user': 'homelab',
         'postgres_password': 'testpassword',
-        'enable_monitoring': True,
         'enable_databases': True
     }

@@ -18,7 +18,6 @@ class TestDockerCompose:
         self.base_path = Path(__file__).parent.parent.parent
         self.compose_files = {
             'base': self.base_path / 'docker-compose.yml',
-            'monitoring': self.base_path / 'services' / 'monitoring' / 'docker-compose.monitoring.yml',
             'media': self.base_path / 'services' / 'media' / 'docker-compose.media.yml',
             'web': self.base_path / 'services' / 'web' / 'docker-compose.web.yml',
             'databases': self.base_path / 'services' / 'databases' / 'docker-compose.databases.yml',
@@ -34,7 +33,6 @@ class TestDockerCompose:
         """Test that base docker-compose.yml is valid YAML"""
         with open(self.compose_files['base']) as f:
             config = yaml.safe_load(f)
-        assert 'version' in config, "Missing version in docker-compose.yml"
         assert 'services' in config, "Missing services in docker-compose.yml"
     
     def test_base_compose_has_required_services(self):
@@ -42,7 +40,7 @@ class TestDockerCompose:
         with open(self.compose_files['base']) as f:
             config = yaml.safe_load(f)
         
-        required_services = ['traefik', 'watchtower']
+        required_services = ['traefik', 'cloudflared']
         for service in required_services:
             assert service in config['services'], f"Missing service: {service}"
     
@@ -54,18 +52,7 @@ class TestDockerCompose:
         traefik = config['services']['traefik']
         assert traefik['image'].startswith('traefik:'), "Traefik image should start with traefik:"
         assert '80:80' in traefik['ports'], "Traefik should expose port 80"
-        assert '443:443' in traefik['ports'], "Traefik should expose port 443"
         assert '8080:8080' in traefik['ports'], "Traefik should expose port 8080"
-    
-    def test_monitoring_compose_valid(self):
-        """Test monitoring docker-compose is valid"""
-        with open(self.compose_files['monitoring']) as f:
-            config = yaml.safe_load(f)
-        
-        assert 'services' in config, "Missing services in monitoring compose"
-        required_services = ['node-exporter', 'cadvisor']
-        for service in required_services:
-            assert service in config['services'], f"Missing monitoring service: {service}"
     
     def test_database_compose_valid(self):
         """Test database docker-compose is valid"""

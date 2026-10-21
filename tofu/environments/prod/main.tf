@@ -2,7 +2,7 @@
 
 terraform {
   required_version = ">= 1.0.0"
-  
+
   required_providers {
     docker = {
       source  = "kreuzwerker/docker"
@@ -13,7 +13,7 @@ terraform {
       version = "~> 2.0"
     }
   }
-  
+
   backend "s3" {
     bucket         = "homelab-terraform-state"
     key            = "prod/terraform.tfstate"
@@ -42,7 +42,7 @@ locals {
 # Import base configuration
 module "docker" {
   source = "../../modules/docker"
-  
+
   environment = local.environment
   domain      = local.domain
   docker_host = var.docker_host
@@ -51,7 +51,7 @@ module "docker" {
 
 module "network" {
   source = "../../modules/network"
-  
+
   environment     = local.environment
   network_name    = "homelab_network"
   network_driver  = "bridge"
@@ -62,8 +62,8 @@ module "network" {
 
 module "storage" {
   source = "../../modules/storage"
-  
-  environment  = local.environment
-  base_path    = "/var/lib/homelab"
-  common_tags  = local.common_tags
+
+  environment = local.environment
+  base_path   = "/var/lib/homelab"
+  common_tags = local.common_tags
 }

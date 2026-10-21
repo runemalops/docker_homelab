@@ -36,10 +36,6 @@ flowchart TB
             MEDIA2["media: navidrome:4533 · jellyfin:8096"]
         end
 
-        subgraph MON["Red monitoring_network"]
-            NODE["node-exporter"] --> CADV["cadvisor:8086"]
-        end
-
         subgraph DATA["Red databases_network / volúmenes"]
             PG["postgres:5432"] & RD["redis:6379"] & MA["mariadb:3306"]
         end
@@ -56,7 +52,6 @@ flowchart TB
 |---|---|
 | `homelab_network` | backbone: casi todos los servicios |
 | `web_network` | `traefik`, `cloudflared` y los backends publicados |
-| `monitoring_network` | node-exporter, cAdvisor |
 | `databases_network` / `networking_network` | aislamiento de DBs y de wireguard/NPM |
 
 ### Superficie publicada hoy
@@ -65,7 +60,7 @@ flowchart TB
 |---|---|
 | `traefik` (file provider, `configs/traefik/dynamic/`) | `navidrome`, `jellyfin`, `bikerzone`, `traefik` dashboard |
 | Túnel Cloudflare (origen directo LAN) | `www` (192.168.1.21:2368), `git`, `ci`, `crafty`, `bookheaven` (192.168.1.99) |
-| Solo puertos LAN (sin proxy) | nginx, gitea, vaultwarden, uptime-kuma, wireguard, NPM, cAdvisor, node-exporter |
+| Solo puertos LAN (sin proxy) | nginx, gitea, vaultwarden, uptime-kuma, wireguard, NPM |
 
 ## Cómo integra opencode el homelab
 

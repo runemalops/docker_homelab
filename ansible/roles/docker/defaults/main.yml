@@ -14,7 +14,6 @@ docker_storage_driver: "overlay2"
 # Docker networks to create
 docker_networks:
   - homelab_network
-  - monitoring_network
   - web_network
   - databases_network
   - networking_network

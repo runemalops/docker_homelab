@@ -2,7 +2,7 @@
 
 terraform {
   required_version = ">= 1.0.0"
-  
+
   required_providers {
     docker = {
       source  = "kreuzwerker/docker"
@@ -35,15 +35,6 @@ variable "common_tags" {
 # Resources
 
 # Create Docker networks
-resource "docker_network" "monitoring" {
-  name   = "monitoring_network"
-  driver = "bridge"
-  labels {
-    label = "environment"
-    value = var.environment
-  }
-}
-
 resource "docker_network" "web" {
   name   = "web_network"
   driver = "bridge"
@@ -89,11 +80,6 @@ resource "docker_volume" "redis_data" {
 }
 
 # Outputs
-output "monitoring_network_id" {
-  description = "Monitoring network ID"
-  value       = docker_network.monitoring.id
-}
-
 output "web_network_id" {
   description = "Web network ID"
   value       = docker_network.web.id

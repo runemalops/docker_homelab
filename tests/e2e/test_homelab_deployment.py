@@ -7,6 +7,7 @@ TDD approach: Tests written before implementation
 import pytest
 import yaml
 import os
+import json
 import subprocess
 import time
 from pathlib import Path
@@ -75,7 +76,7 @@ class TestHomelabDeployment:
         result = subprocess.run(['docker', 'network', 'ls', '--format', '{{.Name}}'],
                               capture_output=True, text=True)
         
-        required_networks = ['homelab_network', 'monitoring_network', 'web_network']
+        required_networks = ['homelab_network', 'web_network']
         for network in required_networks:
             assert network in result.stdout, f"Network {network} not found"
     

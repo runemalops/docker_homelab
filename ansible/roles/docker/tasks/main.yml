@@ -93,7 +93,6 @@
     state: present
   loop:
     - homelab_network
-    - monitoring_network
     - web_network
     - databases_network
     - networking_network

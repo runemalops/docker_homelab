@@ -2,7 +2,7 @@
 
 terraform {
   required_version = ">= 1.0.0"
-  
+
   required_providers {
     local = {
       source  = "hashicorp/local"
@@ -40,7 +40,6 @@ locals {
     "${var.base_path}/data",
     "${var.base_path}/logs",
     "${var.base_path}/backups",
-    "${var.base_path}/monitoring",
     "${var.base_path}/databases",
     "${var.base_path}/media",
     "${var.base_path}/downloads",
@@ -50,7 +49,7 @@ locals {
 # Create directories
 resource "null_resource" "storage_dirs" {
   for_each = toset(local.directories)
-  
+
   provisioner "local-exec" {
     command = "mkdir -p ${each.value}"
   }
@@ -58,7 +57,7 @@ resource "null_resource" "storage_dirs" {
 
 # Create a summary file
 resource "local_file" "storage_summary" {
-  content = <<-EOT
+  content  = <<-EOT
     Homelab Storage Configuration
     Environment: ${var.environment}
     Base Path: ${var.base_path}

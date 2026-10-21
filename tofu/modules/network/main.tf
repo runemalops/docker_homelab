@@ -2,7 +2,7 @@
 
 terraform {
   required_version = ">= 1.0.0"
-  
+
   required_providers {
     docker = {
       source  = "kreuzwerker/docker"
@@ -49,17 +49,17 @@ variable "common_tags" {
 resource "docker_network" "main" {
   name   = var.network_name
   driver = var.network_driver
-  
+
   ipam_config {
-    subnet = var.network_subnet
+    subnet  = var.network_subnet
     gateway = var.network_gateway
   }
-  
+
   labels {
     label = "environment"
     value = var.environment
   }
-  
+
   labels {
     label = "managed_by"
     value = "terraform"

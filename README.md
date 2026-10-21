@@ -8,7 +8,6 @@ A production-ready homelab infrastructure managed with Docker, Ansible, and Open
 docker_homelab/
 ├── base/                          # Base configurations
 ├── services/                      # Service-specific configurations
-│   ├── monitoring/               # Node Exporter, cAdvisor
 │   ├── media/                    # Jellyfin, Navidrome
 │   ├── web/                      # Nginx
 │   ├── databases/                # PostgreSQL, Redis, MariaDB
@@ -39,7 +38,6 @@ docker_homelab/
 - **DRY Principles**: Shared configurations, templates, and reusable modules
 - **Test Driven Development**: Comprehensive test suite with unit, integration, and e2e tests
 - **Security First**: Firewall, Fail2Ban, and security hardening
-- **Monitoring**: Node Exporter and cAdvisor metrics exporters
 - **Automated Deployment**: Ansible for configuration management
 - **Infrastructure as Code**: OpenTofu for infrastructure provisioning
 - **Auto-updates**: Watchtower for automatic container updates
@@ -128,11 +126,6 @@ docker compose --env-file ~/.homelab/.env up -d
 - **Cloudflared**: Cloudflare Tunnel to publish services
 - **Watchtower**: Automatic container updates
 
-### Monitoring Stack
-
-- **Node Exporter**: System metrics
-- **cAdvisor**: Container metrics
-
 ### Optional Services
 
 - **Databases**: PostgreSQL, Redis, MariaDB
@@ -201,7 +194,6 @@ Edit `ansible/group_vars/all.yml` to customize:
 
 ```yaml
 domain: "yourdomain.com"
-enable_monitoring: true
 enable_databases: true
 ```
 

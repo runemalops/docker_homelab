@@ -13,7 +13,6 @@
     state: directory
     mode: '0755'
   loop:
-    - "{{ homelab_base_path }}/services/monitoring"
     - "{{ homelab_base_path }}/services/media"
     - "{{ homelab_base_path }}/services/web"
     - "{{ homelab_base_path }}/services/databases"
@@ -27,22 +26,12 @@
     dest: "{{ homelab_base_path }}/services/{{ item }}/docker-compose.{{ item }}.yml"
     mode: '0644'
   loop:
-    - monitoring
     - media
     - web
     - databases
     - networking
     - utilities
   tags: [services, copy]
-
-- name: Deploy monitoring services
-  community.docker.docker_compose:
-    project_src: "{{ homelab_base_path }}/services/monitoring"
-    files:
-      - docker-compose.monitoring.yml
-    state: present
-  when: enable_monitoring | default(true)
-  tags: [services, monitoring]
 
 - name: Deploy database services
   community.docker.docker_compose:
