@@ -1,28 +1,8 @@
 version: '3.8'
 
-# Utility services - Homepage, Gitea, Vaultwarden, Uptime Kuma
+# Utility services - Gitea, Vaultwarden, Uptime Kuma
 
 services:
-  homepage:
-    image: ghcr.io/gethomepage/homepage:latest
-    container_name: homepage
-    restart: unless-stopped
-    ports:
-      - "3001:3000"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./configs/homepage:/app/config
-    environment:
-      - PUID=${PUID:-1000}
-      - PGID=${PGID:-1000}
-    networks:
-      - homelab
-      - web
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.homepage.rule: "Host(`home.${DOMAIN:-localhost}`)"
-      traefik.http.services.homepage.loadbalancer.server.port: 3000
-
   gitea:
     image: gitea/gitea:latest
     container_name: gitea

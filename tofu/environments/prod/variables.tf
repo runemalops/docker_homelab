@@ -17,11 +17,6 @@ variable "environment" {
   default     = "prod"
 }
 
-variable "enable_monitoring" {
-  description = "Enable monitoring stack"
-  type        = bool
-  default     = true
-}
 
 variable "enable_databases" {
   description = "Enable database services"
@@ -63,10 +58,4 @@ variable "backup_schedule" {
   description = "Backup schedule (cron format)"
   type        = string
   default     = "0 2 * * *"
-}
-
-variable "monitoring_retention_days" {
-  description = "Monitoring data retention in days"
-  type        = number
-  default     = 90
 }

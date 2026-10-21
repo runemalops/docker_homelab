@@ -70,22 +70,6 @@ class TestHomelabDeployment:
         except requests.exceptions.RequestException:
             pytest.skip("Traefik is not running or not accessible")
     
-    def test_prometheus_is_responsive(self):
-        """Test that Prometheus is responsive"""
-        try:
-            response = self.http.get(f"http://localhost:9090/-/healthy", timeout=10)
-            assert response.status_code == 200, "Prometheus is not responsive"
-        except requests.exceptions.RequestException:
-            pytest.skip("Prometheus is not running or not accessible")
-    
-    def test_grafana_is_responsive(self):
-        """Test that Grafana is responsive"""
-        try:
-            response = self.http.get(f"http://localhost:3000/api/health", timeout=10)
-            assert response.status_code == 200, "Grafana is not responsive"
-        except requests.exceptions.RequestException:
-            pytest.skip("Grafana is not running or not accessible")
-    
     def test_network_connectivity(self):
         """Test that Docker networks are properly configured"""
         result = subprocess.run(['docker', 'network', 'ls', '--format', '{{.Name}}'],
@@ -100,7 +84,7 @@ class TestHomelabDeployment:
         result = subprocess.run(['docker', 'volume', 'ls', '--format', '{{.Name}}'],
                               capture_output=True, text=True)
         
-        required_volumes = ['prometheus_data', 'grafana_data']
+        required_volumes = ['docker_homelab_gitea_data', 'docker_homelab_navidrome_data']
         for volume in required_volumes:
             assert volume in result.stdout, f"Volume {volume} not found"
     

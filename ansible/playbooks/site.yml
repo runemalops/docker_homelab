@@ -24,10 +24,6 @@
     - role: security
       tags: [security]
     
-    - role: monitoring
-      tags: [monitoring]
-      when: enable_monitoring | default(true)
-    
     - role: homelab-services
       tags: [services]
 
@@ -39,8 +35,6 @@
           
           Services deployed:
           - Traefik (Reverse Proxy): http://{{ domain | default('localhost') }}:8080
-          - Prometheus (Monitoring): http://{{ domain | default('localhost') }}:9090
-          - Grafana (Dashboards): http://{{ domain | default('localhost') }}:3000
           
           Next steps:
           1. Configure your DNS to point to this server

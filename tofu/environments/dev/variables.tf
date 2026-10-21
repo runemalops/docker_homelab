@@ -18,11 +18,6 @@ variable "environment" {
   default     = "dev"
 }
 
-variable "enable_monitoring" {
-  description = "Enable monitoring stack"
-  type        = bool
-  default     = true
-}
 
 variable "enable_databases" {
   description = "Enable database services"

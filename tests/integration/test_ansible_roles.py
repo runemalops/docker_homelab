@@ -71,15 +71,6 @@ class TestAnsibleRoles:
         assert 'ufw' in content, "Security role should configure UFW"
         assert 'fail2ban' in content, "Security role should configure Fail2Ban"
     
-    def test_monitoring_role_configures_prometheus(self):
-        """Test that monitoring role configures Prometheus"""
-        monitoring_tasks = self.roles_path / 'monitoring' / 'tasks' / 'main.yml'
-        with open(monitoring_tasks) as f:
-            content = f.read()
-        
-        assert 'prometheus' in content, "Monitoring role should configure Prometheus"
-        assert 'grafana' in content, "Monitoring role should configure Grafana"
-    
     def test_group_vars_has_required_variables(self):
         """Test that group_vars has required variables"""
         group_vars = self.ansible_path / 'group_vars' / 'all.yml'

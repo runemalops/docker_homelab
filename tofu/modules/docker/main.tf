@@ -72,22 +72,6 @@ resource "docker_network" "networking" {
 }
 
 # Create Docker volumes
-resource "docker_volume" "prometheus_data" {
-  name = "prometheus_data"
-  labels {
-    label = "environment"
-    value = var.environment
-  }
-}
-
-resource "docker_volume" "grafana_data" {
-  name = "grafana_data"
-  labels {
-    label = "environment"
-    value = var.environment
-  }
-}
-
 resource "docker_volume" "postgres_data" {
   name = "postgres_data"
   labels {

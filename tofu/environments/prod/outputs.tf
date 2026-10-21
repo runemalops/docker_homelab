@@ -29,8 +29,6 @@ output "service_endpoints" {
   description = "Service endpoints"
   value = {
     traefik     = "https://${var.domain}"
-    prometheus  = "https://prometheus.${var.domain}"
-    grafana     = "https://grafana.${var.domain}"
   }
 }
 
@@ -44,13 +42,5 @@ output "backup_status" {
   value = {
     enabled  = var.backup_enabled
     schedule = var.backup_schedule
-  }
-}
-
-output "monitoring_config" {
-  description = "Monitoring configuration"
-  value = {
-    retention_days = var.monitoring_retention_days
-    enabled        = var.enable_monitoring
   }
 }

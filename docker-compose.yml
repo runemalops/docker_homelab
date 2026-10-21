@@ -14,8 +14,6 @@ networks:
     name: web_network
 
 volumes:
-  prometheus_data:
-  grafana_data:
   redis_data:
   postgres_data:
 

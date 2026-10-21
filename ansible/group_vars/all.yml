@@ -18,14 +18,6 @@ redis_password: "changeme"
 mysql_root_password: "changeme"
 mysql_database: "homelab"
 
-# Monitoring
-prometheus_retention: "30d"
-grafana_admin_password: "admin"
-
-# Media
-media_dir: "/media"
-downloads_dir: "/downloads"
-
 # Feature flags
 enable_monitoring: true
 enable_databases: true
@@ -46,6 +38,3 @@ docker_compose_path: "/home/runemal/Documents/docker_homelab"
 homelab_base_path: "/home/runemal/Documents/docker_homelab"
 homelab_data_path: "/var/lib/homelab"
 homelab_config_path: "{{ homelab_base_path }}/configs"
-
-# Additional scrape configs for Prometheus
-additional_scrape_configs: []

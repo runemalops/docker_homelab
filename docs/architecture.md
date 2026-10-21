@@ -30,26 +30,24 @@ flowchart TB
 
         subgraph NETW["Red homelab_network"]
             direction LR
-            WEB["web: nginx:8081 · nextcloud:8444<br/>wordpress:8082"]
-            UTIL["utilities: homepage:3001 · gitea:3002/2222<br/>vaultwarden:3003 · uptime-kuma:3004"]
-            NETG["networking: pihole:8083 · wireguard:51820<br/>nginx-proxy-manager:8084"]
-            MEDIA2["media: sonarr:8989 · radarr:7878<br/>qbittorrent:8085 · navidrome:4533 · jellyfin:8096"]
+            WEB["web: nginx:8081"]
+            UTIL["utilities: gitea:3002/2222<br/>vaultwarden:3003 · uptime-kuma:3004"]
+            NETG["networking: wireguard:51820<br/>nginx-proxy-manager:8084"]
+            MEDIA2["media: navidrome:4533 · jellyfin:8096"]
         end
 
         subgraph MON["Red monitoring_network"]
-            PROM["prometheus:9090"] --> GRAF["grafana:3000"]
-            NODE["node-exporter"] & CADV["cadvisor:8086"] --> PROM
+            NODE["node-exporter"] --> CADV["cadvisor:8086"]
         end
 
         subgraph DATA["Red databases_network / volúmenes"]
             PG["postgres:5432"] & RD["redis:6379"] & MA["mariadb:3306"]
         end
 
-        VOL[("volúmenes nombrados<br/>*_data · *_config · prometheus_data")]
+        VOL[("volúmenes nombrados<br/>*_data · *_config")]
     end
 
-    GRAF -. "scrape" .-> NETW
-    WEB & UTIL -. "dependen de" .-> DATA
+    WEB -. "proxy" .-> NETW
 ```
 
 ### Redes
@@ -58,8 +56,8 @@ flowchart TB
 |---|---|
 | `homelab_network` | backbone: casi todos los servicios |
 | `web_network` | `traefik`, `cloudflared` y los backends publicados |
-| `monitoring_network` | prometheus, grafana, node-exporter, cadvisor |
-| `databases_network` / `networking_network` | aislamiento de DBs y de pihole/wireguard/NPM |
+| `monitoring_network` | node-exporter, cAdvisor |
+| `databases_network` / `networking_network` | aislamiento de DBs y de wireguard/NPM |
 
 ### Superficie publicada hoy
 
@@ -67,7 +65,7 @@ flowchart TB
 |---|---|
 | `traefik` (file provider, `configs/traefik/dynamic/`) | `navidrome`, `jellyfin`, `bikerzone`, `traefik` dashboard |
 | Túnel Cloudflare (origen directo LAN) | `www` (192.168.1.21:2368), `git`, `ci`, `crafty`, `bookheaven` (192.168.1.99) |
-| Solo puertos LAN (sin proxy) | nginx, nextcloud, wordpress, sonarr, radarr, qbittorrent, gitea, vaultwarden, homepage, uptime-kuma, pihole, wireguard, NPM, prometheus, grafana, cadvisor |
+| Solo puertos LAN (sin proxy) | nginx, gitea, vaultwarden, uptime-kuma, wireguard, NPM, cAdvisor, node-exporter |
 
 ## Cómo integra opencode el homelab
 

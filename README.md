@@ -8,12 +8,12 @@ A production-ready homelab infrastructure managed with Docker, Ansible, and Open
 docker_homelab/
 ├── base/                          # Base configurations
 ├── services/                      # Service-specific configurations
-│   ├── monitoring/               # Prometheus, Grafana, Node Exporter
-│   ├── media/                    # Jellyfin, Sonarr, Radarr, qBittorrent
-│   ├── web/                      # Nginx, Nextcloud, WordPress
+│   ├── monitoring/               # Node Exporter, cAdvisor
+│   ├── media/                    # Jellyfin, Navidrome
+│   ├── web/                      # Nginx
 │   ├── databases/                # PostgreSQL, Redis, MariaDB
-│   ├── networking/               # Pi-hole, WireGuard, Nginx Proxy Manager
-│   └── utilities/                # Homepage, Gitea, Vaultwarden, Uptime Kuma
+│   ├── networking/               # WireGuard, Nginx Proxy Manager
+│   └── utilities/                # Gitea, Vaultwarden, Uptime Kuma
 ├── ansible/                       # Ansible playbooks and roles
 │   ├── roles/                    # Reusable Ansible roles
 │   ├── playbooks/                # Main playbooks
@@ -39,7 +39,7 @@ docker_homelab/
 - **DRY Principles**: Shared configurations, templates, and reusable modules
 - **Test Driven Development**: Comprehensive test suite with unit, integration, and e2e tests
 - **Security First**: Firewall, Fail2Ban, and security hardening
-- **Monitoring**: Full observability with Prometheus and Grafana
+- **Monitoring**: Node Exporter and cAdvisor metrics exporters
 - **Automated Deployment**: Ansible for configuration management
 - **Infrastructure as Code**: OpenTofu for infrastructure provisioning
 - **Auto-updates**: Watchtower for automatic container updates
@@ -130,17 +130,16 @@ docker compose --env-file ~/.homelab/.env up -d
 
 ### Monitoring Stack
 
-- **Prometheus**: Metrics collection and alerting
-- **Grafana**: Dashboards and visualization
 - **Node Exporter**: System metrics
+- **cAdvisor**: Container metrics
 
 ### Optional Services
 
 - **Databases**: PostgreSQL, Redis, MariaDB
-- **Networking**: Pi-hole, WireGuard, Nginx Proxy Manager
-- **Web**: Nginx, Nextcloud, WordPress
-- **Media**: Jellyfin, Sonarr, Radarr, qBittorrent
-- **Utilities**: Homepage, Gitea, Vaultwarden, Uptime Kuma
+- **Networking**: WireGuard, Nginx Proxy Manager
+- **Web**: Nginx
+- **Media**: Jellyfin, Navidrome
+- **Utilities**: Gitea, Vaultwarden, Uptime Kuma
 
 ## Testing
 
@@ -194,7 +193,6 @@ $HOME/
 ```bash
 DOMAIN=yourdomain.com
 POSTGRES_PASSWORD=your-secure-password
-GRAFANA_ADMIN_PASSWORD=your-grafana-password
 ```
 
 ### Ansible Variables

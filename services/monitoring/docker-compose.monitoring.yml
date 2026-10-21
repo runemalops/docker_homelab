@@ -1,49 +1,8 @@
 version: '3.8'
 
-# Monitoring stack - Prometheus + Grafana + Node Exporter
+# Monitoring stack - Node Exporter + cAdvisor
 
 services:
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    restart: unless-stopped
-    ports:
-      - "9090:9090"
-    volumes:
-      - prometheus_data:/prometheus
-      - ./configs/prometheus:/etc/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-30d}'
-    networks:
-      - monitoring
-      - homelab
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.prometheus.rule: "Host(`prometheus.${DOMAIN:-localhost}`)"
-      traefik.http.services.prometheus.loadbalancer.server.port: 9090
-
-  grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./configs/grafana:/etc/grafana/provisioning
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
-      - GF_INSTALL_PLUGINS=grafana-piechart-panel
-    networks:
-      - monitoring
-      - homelab
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.grafana.rule: "Host(`grafana.${DOMAIN:-localhost}`)"
-      traefik.http.services.grafana.loadbalancer.server.port: 3000
-
   node-exporter:
     image: prom/node-exporter:latest
     container_name: node-exporter
@@ -77,8 +36,6 @@ services:
       - monitoring
 
 volumes:
-  prometheus_data:
-  grafana_data:
 
 networks:
   monitoring:

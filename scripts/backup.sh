@@ -37,8 +37,6 @@ backup_volumes() {
     log "Backing up Docker volumes..."
     
     VOLUMES=(
-        "prometheus_data"
-        "grafana_data"
         "postgres_data"
         "redis_data"
     )

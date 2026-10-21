@@ -63,7 +63,7 @@ class TestDockerCompose:
             config = yaml.safe_load(f)
         
         assert 'services' in config, "Missing services in monitoring compose"
-        required_services = ['prometheus', 'grafana', 'node-exporter']
+        required_services = ['node-exporter', 'cadvisor']
         for service in required_services:
             assert service in config['services'], f"Missing monitoring service: {service}"
     
