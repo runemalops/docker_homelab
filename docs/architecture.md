@@ -17,8 +17,8 @@ flowchart TB
     CF <-->|"tunnel QUIC (TUNNEL_TOKEN)"| CFD["cloudflared<br/>red: web"]
 
     CFD -->|"navidrome · jellyfin · bikerzone<br/>rutas retiradas → 404"| TR["traefik :80<br/>file provider"]
-    CFD -->|"origen directo (LAN)"| LAN["192.168.1.99:3000/8000/8443<br/>192.168.1.99:8080 · 192.168.1.21:2368"]
-    LAN -. "bikerzone-prod-nginx<br/>alias 'bikerzone'" .-> BFZ
+    CFD -->|"origen directo (Docker)"| DOCK["web:2368"]
+    CFD -. "bikerzone:80 → alias<br/>bikerzone-prod-nginx" .-> BFZ
 
     TR --> NAV["navidrome :4533"]
     TR --> JEL["jellyfin :8096"]
@@ -57,7 +57,7 @@ flowchart TB
 | Vía | Hostnames / rutas |
 |---|---|
 | `traefik` (file provider, `configs/traefik/dynamic/`) | `navidrome`, `jellyfin`, `bikerzone`, `traefik` dashboard |
-| Túnel Cloudflare (origen directo LAN) | `www` (192.168.1.21:2368), `git`, `ci`, `crafty`, `bookheaven` (192.168.1.99) |
+| Túnel Cloudflare (origen directo Docker) | `www` (web:2368) |
 | Solo puertos LAN (sin proxy) | nginx, gitea, vaultwarden, uptime-kuma, wireguard, NPM |
 
 ## Cómo integra opencode el homelab
@@ -87,4 +87,5 @@ flowchart LR
 - `traefik` solo usa `file provider`: las labels `traefik.*` de los compose no tienen efecto, por eso el resto de servicios no está tras el proxy.
 - `traefik` está únicamente en `web_network` y los backends viven en `homelab_network` → 502 hasta corregir la red.
 - Quedan reglas residuales en la config remota del túnel (Zero Trust, token) de servicios ya retirados; devuelven 404 y hay que borrarlas desde el dashboard de Cloudflare.
-- `www.runemal.cloud → 192.168.1.21:2368` no responde (origen caído).
+- `git`, `ci` y `bookheaven` se han retirado de la superficie publicada: sus reglas hay que borrarlas del túnel en el dashboard de Cloudflare.
+- El origen directo restante (`www` → `web:2368`) apunta a un servicio Docker que aún no existe en el stack; hay que añadirlo en `web_network`.
